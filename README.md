@@ -2,6 +2,7 @@
 
 An implementation of the SMIXS smoothing spline clustering algorithm for longitudinal data analysis.
 The algorithm is based on the works [1] and [2].
+The repository includes both the SMIXS algorithm used in [2] and the longitudinal dataset generator also utilized in [2].
 
 ## REFERENCES
 
