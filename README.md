@@ -1,6 +1,6 @@
 # SMIXS
 
-SMIXS smoothing spline clustering approach for analysing longitudinal data.
+An implementation of the SMIXS smoothing spline clustering algorithm for longitudinal data analysis.
 The algorithm is based on the works [1] and [2].
 
 ## REFERENCES
