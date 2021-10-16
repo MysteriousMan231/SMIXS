@@ -4,10 +4,6 @@ using Noise
 using Distributions
 using LinearAlgebra
 
-function rndNum(N)
-    return Int32(round(rand()*N + 0.5))
-end
-
 function cerp(y0, y1, a)
     g = (1 - cos(pi*(a - floor(a))))*0.5
 
