@@ -1,4 +1,4 @@
-using ImageFiltering
+#using ImageFiltering
 using SparseArrays
 
 #####################################################
@@ -186,6 +186,8 @@ end
     R[1:NMEASUREMENTS - 1:end] = (h[1:end - 1] + h[2:end])*(1/3)
 
     K = Q*inv(R)*Q'
+
+    display(K)
 
     R = sparse(R)
     Q = sparse(Q)
