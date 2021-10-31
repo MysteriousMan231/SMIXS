@@ -1,8 +1,11 @@
+from numpy.core import numeric
 from src.SMIXSHelper   import init_penatly_matrix
 from src.DataGenerator import generate_dataset
 
 import matplotlib.pyplot as plt
 import numpy as np
+
+from src.SMIXS import _init_random
 
 def main():
     
@@ -16,6 +19,9 @@ def main():
         number_of_clusters     = number_of_clusters, 
         number_of_measurements = number_of_measurements,
         number_of_subjects     = number_of_subjects)
+
+    _init_random(data = dataset, number_of_clusters = number_of_clusters)
+
 
     for j in range(0, number_of_clusters):
 
