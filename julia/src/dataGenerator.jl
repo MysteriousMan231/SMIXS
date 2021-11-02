@@ -66,7 +66,6 @@ function generateData(NMEASUREMENTS, NSUBJECTS, NCLUSTERS, seed = 1, noiselvl = 
     kF = (kF .- minkF)./(maxkF - minkF)
 
     #Random.seed!(noiseSeed)
-    x = collect(1:NMEASUREMENTS)
     for j = 1:NSUBJECTS
         idx = iP[sum(P .< rand()) + 1]
 
