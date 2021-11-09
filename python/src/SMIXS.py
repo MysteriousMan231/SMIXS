@@ -1,4 +1,6 @@
 from typing          import Tuple
+
+from numpy.core import numeric
 from src.SMIXSHelper import init_penatly_matrix
 
 import numpy as np
@@ -29,12 +31,19 @@ def SMIXS(*,
        (K, R, Q) = init_penatly_matrix(number_of_measurements)
        QQ = np.matmul(np.transpose(Q), Q)
 
-
-def _init_random(*, data: np.array, number_of_clusters: int) -> \
-    Tuple[np.array, np.array, np.array, np.array]:
-
-    variance = np.zeros(shape = number_of_clusters, dtype = np.float32)
     
-    results = KMeans(n_clusters = number_of_clusters, max_iter = 50).fit(data)
 
-    pass
+
+def _init_kmeans(*, data: np.array, number_of_clusters: int):
+    #Tuple[np.array, np.array, np.array, np.array]:
+
+    results = KMeans(n_clusters = number_of_clusters).fit(data)
+
+    cluster_mean     = results.cluster_centers_
+    cluster_variance = np.zeros(shape = number_of_clusters, dtype = np.float32)
+    cluster_mixing   = np.zeros(shape = number_of_clusters, dtype = np.float32)
+    cluster_alpha    = np.zeros(shape = number_of_clusters, dtype = np.float32)
+
+    
+
+    return results
