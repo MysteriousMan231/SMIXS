@@ -13,23 +13,17 @@ def main():
     
     #init_penatly_matrix(10)
 
-    number_of_clusters     = 10
+    number_of_clusters     = 3
     number_of_measurements = 64
     number_of_subjects     = 200
 
     (dataset, functions, groundtruth) = generate_dataset(
         number_of_clusters     = number_of_clusters, 
         number_of_measurements = number_of_measurements,
-        number_of_subjects     = number_of_subjects)
+        number_of_subjects     = number_of_subjects,
+        noise_level            = 0)
 
-    results = _init_kmeans(data = dataset, number_of_clusters = number_of_clusters)
 
-    plot(
-        predicted_clusters = results.cluster_centers_, 
-        predicted_labels   = results.labels_, 
-        true_clusters      = functions, 
-        true_labels        = to_index(groundtruth), 
-        data               = dataset)
     
 
     

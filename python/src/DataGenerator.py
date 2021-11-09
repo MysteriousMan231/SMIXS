@@ -46,7 +46,7 @@ def generate_dataset(*,
     for i in range(0, number_of_clusters):
         
         y0 = np.copy(y)
-        v0 = np.random.randn(y.shape[0])*np.sqrt(0.5)
+        v0 = np.random.normal(scale = np.sqrt(0.5), size = y.shape[0])
         v0[v0 < 0] = np.clip(v0[v0 < 0], -top, -bot)
         v0[v0 > 0] = np.clip(v0[v0 > 0],  bot,  top)
         y0 = y0 + v0
@@ -66,16 +66,16 @@ def generate_dataset(*,
         idx = iP[sum(P < np.random.uniform())]
 
         dataset[j, :] = latent_functions[idx, :]
-        
+             
         if   noise_level == 0:
-            dataset[j, :] += np.random.randn(dataset[j, :].shape[0])*0.2
+            dataset[j, :] += np.random.normal(scale = 0.2, size = number_of_measurements)
         elif noise_level == 1:
-            dataset[j, :] += np.random.randn(dataset[j, :].shape[0])*0.4
+            dataset[j, :] += np.random.normal(scale = 0.4, size = number_of_measurements)
         elif noise_level == 2:
-            dataset[j, :] += np.random.randn(dataset[j, :].shape[0])*0.6
+            dataset[j, :] += np.random.normal(scale = 0.6, size = number_of_measurements)
         else:
-            dataset[j, :] += np.random.randn(dataset[j, :].shape[0])*0.8
-
+            dataset[j, :] += np.random.normal(scale = 0.8, size = number_of_measurements)
+        
         ground_truth[j, idx] = 1
 
     return dataset, latent_functions, ground_truth

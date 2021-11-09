@@ -44,7 +44,7 @@ def init_penatly_matrix(n_measurements: int):
 
     return (np.matmul(np.matmul(Q, np.linalg.inv(R)), np.transpose(Q)), R, Q)
     
-def plot(*, predicted_clusters: np.array, predicted_labels: np.array, true_clusters: np.array, true_labels: np.array, data: np.array) -> None:
+def plot(*, predicted_clusters: np.array, predicted_variance: np.array, predicted_labels: np.array, true_clusters: np.array, true_labels: np.array, data: np.array) -> None:
 
     fig, axs = plt.subplots(2, 1)
 
@@ -71,7 +71,7 @@ def plot(*, predicted_clusters: np.array, predicted_labels: np.array, true_clust
     for i in range(0, number_of_clusters):
 
         cluster = data[predicted_labels == i, :]
-        c = (np.random.uniform()*0.7, np.random.uniform()*0.7, np.random.uniform()*0.7, 0.25)
+        c = (np.random.uniform()*0.7, np.random.uniform()*0.7, np.random.uniform()*0.7, 0.1)
 
         for j in range(0, cluster.shape[0]):
             axs[1].plot(cluster[j,:], color = c)
@@ -80,7 +80,11 @@ def plot(*, predicted_clusters: np.array, predicted_labels: np.array, true_clust
 
     for i in range(0, number_of_clusters):
 
+        s0 = predicted_clusters[i,:] + np.sqrt(predicted_variance[i])
+        s1 = predicted_clusters[i,:] - np.sqrt(predicted_variance[i])
+
         axs[1].plot(predicted_clusters[i,:], color = cc1[i], lw = 4)
-    
+        axs[1].plot(s0, color = cc1[i], lw = 4, linestyle = "dashed")
+        axs[1].plot(s1, color = cc1[i], lw = 4, linestyle = "dashed")
 
     plt.show()
