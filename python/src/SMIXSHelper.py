@@ -42,8 +42,8 @@ def init_penatly_matrix(n_measurements: int):
     _fill_diagonal(matrix = R, vector = h[1:-1]*(1/6),          index = (0, 1))
     _fill_diagonal(matrix = R, vector = (h[:-1] + h[1:])*(1/3), index = (0, 0))
 
-    return (np.matmul(np.matmul(Q, np.linalg.inv(R)), np.transpose(Q)), R, Q)
-    
+    return (np.dot(np.dot(Q, np.linalg.inv(R)), np.transpose(Q)), R, Q)
+
 def plot(*, predicted_clusters: np.array, predicted_variance: np.array, predicted_labels: np.array, true_clusters: np.array, true_labels: np.array, data: np.array) -> None:
 
     fig, axs = plt.subplots(2, 1)
@@ -86,5 +86,47 @@ def plot(*, predicted_clusters: np.array, predicted_variance: np.array, predicte
         axs[1].plot(predicted_clusters[i,:], color = cc1[i], lw = 4)
         axs[1].plot(s0, color = cc1[i], lw = 4, linestyle = "dashed")
         axs[1].plot(s1, color = cc1[i], lw = 4, linestyle = "dashed")
+
+    plt.show()
+
+def plot_single(*, clusters: np.array, variance: np.array, labels: np.array, data: np.array) -> None:
+
+    number_of_clusters = clusters.shape[0]
+
+    cc1 = []
+
+    for i in range(0, number_of_clusters):
+
+        cluster = data[labels == i, :]
+        c = (np.random.uniform()*0.7, np.random.uniform()*0.7, np.random.uniform()*0.7, 0.1)
+
+        for j in range(0, cluster.shape[0]):
+            plt.plot(cluster[j,:], color = c)
+
+        cc1.append((c[0], c[1], c[2]))
+
+    for i in range(0, number_of_clusters):
+
+        s0 = clusters[i,:] + np.sqrt(variance[i])
+        s1 = clusters[i,:] - np.sqrt(variance[i])
+
+        plt.plot(clusters[i,:], color = cc1[i], lw = 4, label = "Cluster {}".format(i))
+        plt.legend()
+        plt.plot(s0, color = cc1[i], lw = 4, linestyle = "dashed")
+        plt.plot(s1, color = cc1[i], lw = 4, linestyle = "dashed")
+
+    plt.show()
+    
+
+def plot_one(*, cluster: np.array, variance: np.array) -> None:
+
+    c = (np.random.uniform()*0.7, np.random.uniform()*0.7, np.random.uniform()*0.7)
+
+    s0 = cluster + np.sqrt(variance)
+    s1 = cluster - np.sqrt(variance)
+
+    plt.plot(cluster, color = c, lw = 4)
+    plt.plot(s0,      color = c, lw = 4, linestyle = "dashed")
+    plt.plot(s1,      color = c, lw = 4, linestyle = "dashed")
 
     plt.show()
