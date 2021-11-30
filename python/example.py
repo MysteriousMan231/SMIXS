@@ -10,7 +10,7 @@ from src.SMIXS import SMIXS
 def main():
 
     number_of_clusters     = 3
-    number_of_measurements = 128
+    number_of_measurements = 16
     number_of_subjects     = 200
 
     np.random.seed(2314233)

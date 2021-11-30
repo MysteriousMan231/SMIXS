@@ -89,7 +89,7 @@ class SMIXS:
         self.FILL_ZERO_MEMBER_CLUSTERS = True
 
 
-    def fit(self, data: np.array):
+    def fit(self, data: np.array, init_kmeans: bool = True):
 
         best_result = [None, None]
 
@@ -97,7 +97,10 @@ class SMIXS:
             
             print("Iteration {}/{}".format(j + 1, 50))
 
-            self._init_random(data = data)
+            if init_kmeans:
+                self._init_kmeans(data = data)
+            else:
+                self._init_random(data = data)
             self._fit(data = data)
 
             if j == 0 or self.log_likelihood > best_result[0]:
@@ -196,14 +199,17 @@ class SMIXS:
             wY = np.sum(np.transpose(np.transpose(data)*cluster_labels), axis = 0)
 
             c0 = self._cross_validation(alpha = self.cluster_alpha[i] + h, k = i, wY = wY, W = W, data = data)
-            #c1 = self._cross_validation(alpha = self.cluster_alpha[i] - h, k = i, wY = wY, W = W, data = data)
+            c1 = self._cross_validation(alpha = self.cluster_alpha[i] - h, k = i, wY = wY, W = W, data = data)
             c2 = self._cross_validation(alpha = self.cluster_alpha[i],     k = i, wY = wY, W = W, data = data)
 
             d0 = (c0 - c2)/h
-            #d1 = (c0 - 2*c2 + c1)/h**2
+            d1 = (c0 - 2*c2 + c1)/h**2
             #if np.abs(d1) >= 1e-6:
-            self.cluster_alpha[i] = np.clip(self.cluster_alpha[i] - d0*0.1, 1.0, 1e6)
+            #self.cluster_alpha[i] = np.clip(self.cluster_alpha[i] - d0*0.1, 1.0, 1e6)
+            self.cluster_alpha[i] = np.clip(self.cluster_alpha[i] - d0/(abs(d1) + 1e-8), 1.0, 1e6)
             
+            print(f"{self.cluster_alpha[i]}")
+
             self._cholesky_decomposition(A = self.QQ*self.cluster_alpha[i] + self.R*W)
             T = np.linalg.solve(np.transpose(self.chol_lowertri), np.linalg.solve(self.chol_lowertri, np.dot(np.transpose(self.Q), wY))/self.chol_diagonal)
 
