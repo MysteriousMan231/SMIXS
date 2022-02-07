@@ -1,11 +1,9 @@
-from numpy.core import numeric
-
-from src.SMIXSHelper   import plot_single
-from src.DataGenerator import generate_dataset
+from smixs.SMIXSHelper   import plot_single
+from smixs.DataGenerator import generate_dataset
 
 import numpy as np
 
-from src.SMIXS import SMIXS
+from smixs import SMIXS
 
 def main():
 

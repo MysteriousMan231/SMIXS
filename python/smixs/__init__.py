@@ -1,25 +1,18 @@
-from typing          import Tuple
-
-from numpy.core import numeric
-from sklearn import cluster
-from src.SMIXSHelper import init_penatly_matrix
-from src.SMIXSHelper import plot_single, plot_one
-
 import numpy as np
-
 from sklearn.cluster import KMeans
 
-import matplotlib.pyplot as plt
+from smixs.SMIXSHelper import init_penatly_matrix
+
 
 class SMIXS_internal_state:
 
-    def __init__(self, *, 
+    def __init__(self, *,
         cluster_mean:     np.array,
         cluster_variance: np.array,
         cluster_alpha:    np.array,
         cluster_mixing:   np.array,
         labels:           np.array) -> None:
-        
+
         self.cluster_mean     = np.copy(cluster_mean)
         self.cluster_variance = np.copy(cluster_variance)
         self.cluster_alpha    = np.copy(cluster_alpha)
@@ -28,10 +21,11 @@ class SMIXS_internal_state:
 
 class SMIXS:
 
-    def __init__(self, *,
+    def __init__(self,
         number_of_measurements: int,
         number_of_subjects:     int,
         number_of_clusters:     int,
+        *,
         K:    np.array = None,
         R:    np.array = None,
         Q:    np.array = None,
@@ -47,13 +41,13 @@ class SMIXS:
             QQ = np.dot(np.transpose(Q), Q)
 
             self.Q  = Q
-            self.R  = R 
+            self.R  = R
             self.K  = K
             self.QQ = QQ
         else:
             self.Q  = Q
             self.R  = R
-            self.K  = K 
+            self.K  = K
             self.QQ = QQ
 
         self.number_of_measurements = number_of_measurements
@@ -77,7 +71,7 @@ class SMIXS:
         # Inverse diagonal matrices
 
         self.invd_tmp  = np.zeros(shape = (self.number_of_measurements - 2, self.number_of_measurements - 2), dtype = np.float32)
-        self.invd_diag = np.zeros(shape = self.number_of_measurements, dtype = np.float32) 
+        self.invd_diag = np.zeros(shape = self.number_of_measurements, dtype = np.float32)
 
         # Log likelihood buffer matrix
 
@@ -94,7 +88,7 @@ class SMIXS:
         best_result = [None, None]
 
         for j in range(0, 50):
-            
+
             print("Iteration {}/{}".format(j + 1, 50))
 
             if init_kmeans:
@@ -122,15 +116,15 @@ class SMIXS:
         stop_min_iterations = 5
 
         for step in range(0, self.number_of_iterations):
-            
+
             self._expectation_step(data = data)
-            self._maximization_step(data = data) 
+            self._maximization_step(data = data)
             self._log_likelihood(data = data)
 
             stop_buffer[step] = self.log_likelihood
-          
+
             if step + 1 >= stop_min_iterations:
-        
+
                 r = np.abs((stop_buffer[step] - stop_buffer[step - stop_min_iterations + 1])/stop_buffer[step])
                 #print("Relative error magnitude: {:.5f}".format(r))
 
@@ -173,7 +167,7 @@ class SMIXS:
                     index = subject_index[i]
 
                     t0 = -0.5*np.sum(np.square(mean - data[index, :]))/variance
-                    
+
                     t[i] = t0 + t1[k] + t2[k]
 
                 c = subject_index[np.argmax(t)]
@@ -186,7 +180,7 @@ class SMIXS:
         self.cluster_mixing[:] = self.cluster_mixing/np.sum(self.cluster_mixing)
 
     def _maximization_step(self, *, data: np.array) -> None:
-        
+
         eps = 1e-10
         h   = 0.1
 
@@ -207,15 +201,15 @@ class SMIXS:
             #if np.abs(d1) >= 1e-6:
             #self.cluster_alpha[i] = np.clip(self.cluster_alpha[i] - d0*0.1, 1.0, 1e6)
             self.cluster_alpha[i] = np.clip(self.cluster_alpha[i] - d0/(abs(d1) + 1e-8), 1.0, 1e6)
-            
+
             print(f"{self.cluster_alpha[i]}")
 
             self._cholesky_decomposition(A = self.QQ*self.cluster_alpha[i] + self.R*W)
             T = np.linalg.solve(np.transpose(self.chol_lowertri), np.linalg.solve(self.chol_lowertri, np.dot(np.transpose(self.Q), wY))/self.chol_diagonal)
 
             self.cluster_mean[i, :]  = (wY - self.cluster_alpha[i]*np.dot(self.Q, T))/W
-            self.cluster_variance[i] = (np.sum(np.sum(np.square(data - self.cluster_mean[i, :]), axis = 1)*cluster_labels))/Nk 
-            
+            self.cluster_variance[i] = (np.sum(np.sum(np.square(data - self.cluster_mean[i, :]), axis = 1)*cluster_labels))/Nk
+
             T = np.dot(np.dot(self.cluster_mean[i, :], self.K), self.cluster_mean[i, :])
 
             self.cluster_variance[i] += self.cluster_alpha[i]*T/Nk
