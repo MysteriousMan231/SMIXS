@@ -1,7 +1,11 @@
 from typing import Tuple
 import numpy as np
 
-import matplotlib.pyplot as plt
+# Dependency on matplotlib is required only for plotting functions
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 def _print_matrix(*, matrix: np.array):
 
